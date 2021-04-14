@@ -24,6 +24,7 @@
     "gulp": "^4.0.2",
     "monaco-css": "3.3.0",
     "monaco-editor-core": "0.23.0",
+    "@xhjin/monaco-editor-core": "^0.0.1",
     "monaco-html": "3.3.0",
     "monaco-json": "3.4.0",
     "monaco-languages": "2.3.0",

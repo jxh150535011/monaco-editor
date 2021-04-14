@@ -14,6 +14,10 @@ const File = require('vinyl');
 const ts = require('typescript');
 
 const WEBSITE_GENERATED_PATH = path.join(__dirname, 'website/playground/new-samples');
+const MONACO_EDITOR_CORE_NAME = '@xhjin/monaco-editor-core';
+const MONACO_EDITOR_CORE_PATH = 'node_modules/' + MONACO_EDITOR_CORE_NAME;
+
+
 const MONACO_EDITOR_VERSION = (function() {
 	const packageJsonPath = path.join(__dirname, 'package.json');
 	const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
@@ -90,14 +94,14 @@ gulp.task('release', taskSeries(cleanReleaseTask, function() {
 			.pipe(gulp.dest('release')),
 
 		// min-maps folder
-		gulp.src('node_modules/monaco-editor-core/min-maps/**/*')
+		gulp.src(`${MONACO_EDITOR_CORE_PATH}/min-maps/**/*`)
 			.pipe(gulp.dest('release/min-maps')),
 
 		// other files
 		gulp.src([
-			'node_modules/monaco-editor-core/LICENSE',
-			'node_modules/monaco-editor-core/monaco.d.ts',
-			'node_modules/monaco-editor-core/ThirdPartyNotices.txt',
+			`${MONACO_EDITOR_CORE_PATH}/LICENSE`,
+			`${MONACO_EDITOR_CORE_PATH}/monaco.d.ts`,
+			`${MONACO_EDITOR_CORE_PATH}/ThirdPartyNotices.txt`,
 			'README.md'
 		])
 		.pipe(addPluginDTS())
@@ -111,7 +115,7 @@ gulp.task('release', taskSeries(cleanReleaseTask, function() {
  */
 function releaseOne(type) {
 	return es.merge(
-		gulp.src('node_modules/monaco-editor-core/' + type + '/**/*')
+		gulp.src(`${MONACO_EDITOR_CORE_PATH}/${type}/**/*`)
 			.pipe(addPluginContribs(type))
 			.pipe(gulp.dest('release/' + type)),
 
@@ -181,7 +185,6 @@ function addPluginContribs(type) {
 			var pluginPath = plugin.paths[`npm/${type}`]; // npm/dev or npm/min
 			var contribPath = path.join(__dirname, pluginPath, plugin.contrib.substr(plugin.modulePrefix.length)) + '.js';
 			var contribContents = fs.readFileSync(contribPath).toString();
-
 			contribContents = contribContents.replace(
 				/define\((['"][a-z\/\-]+\/fillers\/monaco-editor-core['"]),\[\],/,
 				'define($1,[\'vs/editor/editor.api\'],'
@@ -205,9 +208,9 @@ function addPluginContribs(type) {
 function ESM_release() {
 	return es.merge(
 		gulp.src([
-			'node_modules/monaco-editor-core/esm/**/*',
+			`${MONACO_EDITOR_CORE_PATH}/esm/**/*`,
 			// we will create our own editor.api.d.ts which also contains the plugins API
-			'!node_modules/monaco-editor-core/esm/vs/editor/editor.api.d.ts'
+			`!${MONACO_EDITOR_CORE_PATH}/esm/vs/editor/editor.api.d.ts`
 		])
 			.pipe(ESM_addImportSuffix())
 			.pipe(ESM_addPluginContribs('release/esm'))
@@ -254,6 +257,7 @@ function ESM_pluginStream(plugin, destinationPath) {
 				const pos = info.importedFiles[i].pos;
 				const end = info.importedFiles[i].end;
 
+
 				if (!/(^\.\/)|(^\.\.\/)/.test(importText)) {
 					// non-relative import
 					if (!/^monaco-editor-core/.test(importText)) {
@@ -262,11 +266,11 @@ function ESM_pluginStream(plugin, destinationPath) {
 					}
 
 					if (importText === 'monaco-editor-core') {
-						importText = 'monaco-editor-core/esm/vs/editor/editor.api';
+						importText = `${MONACO_EDITOR_CORE_NAME}/esm/vs/editor/editor.api`;
 					}
 
 					const myFileDestPath = path.join(DESTINATION, plugin.modulePrefix, data.relative);
-					const importFilePath = path.join(DESTINATION, importText.substr('monaco-editor-core/esm/'.length));
+					const importFilePath = path.join(DESTINATION, importText.substr(`${MONACO_EDITOR_CORE_NAME}/esm/`.length));
 					let relativePath = path.relative(path.dirname(myFileDestPath), importFilePath).replace(/\\/g, '/');
 					if (!/(^\.\/)|(^\.\.\/)/.test(relativePath)) {
 						relativePath = './' + relativePath;
@@ -553,7 +557,9 @@ const buildWebsiteTask = taskSeries(cleanWebsiteTask, function() {
 				}
 
 				var contents = data.contents.toString();
-				contents = contents.replace(/\.\.\/release\/dev/g, 'node_modules/monaco-editor/min');
+				// 调整为本地相对目录
+				contents = contents.replace(/\.\.\/release\/dev/g, '../monaco-editor/release/min');
+
 				contents = contents.replace(/{{version}}/g, MONACO_EDITOR_VERSION);
 				contents = contents.replace(/{{year}}/g, new Date().getFullYear());
 
@@ -632,9 +638,13 @@ const buildWebsiteTask = taskSeries(cleanWebsiteTask, function() {
 			// temporarily create package.json so that npm install doesn't bark
 			fs.writeFileSync('../monaco-editor-website/package.json', '{}');
 			fs.writeFileSync('../monaco-editor-website/.nojekyll', '');
-			cp.execSync('npm install monaco-editor', {
-				cwd: path.join(__dirname, '../monaco-editor-website')
-			});
+
+
+			// 安装依赖 调整依赖名称
+			// cp.execSync('npm install monaco-editor', {
+			// 	cwd: path.join(__dirname, '../monaco-editor-website')
+			// });
+
 			fs.unlinkSync('../monaco-editor-website/package.json');
 
 			this.emit('end');
