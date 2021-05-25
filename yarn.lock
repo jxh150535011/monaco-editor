@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@xhjin/monaco-editor-core@^0.0.1":
+"@xhjin/monaco-editor-core@^0.0.2":
   version "0.0.1"
-  resolved "https://registry.npmjs.org/@xhjin/monaco-editor-core/-/monaco-editor-core-0.0.1.tgz#d769de0cc27a4f4f59aaf1dc71d969490fadec48"
-  integrity sha512-CR2b15c5OUZh7T7dnuLPjJKvKnoDC41qcVpqVg71/M1E/SYOBcAcd2M4UPWiDhk1uK2x9UYCYoRJk9qnNsNg/w==
+  resolved "https://registry.nlark.com/@xhjin/monaco-editor-core/download/@xhjin/monaco-editor-core-0.0.1.tgz#d769de0cc27a4f4f59aaf1dc71d969490fadec48"
+  integrity sha1-12neDMJ6T09ZqvHccdlpSQ+t7Eg=
 
 abab@^2.0.0:
   version "2.0.5"
