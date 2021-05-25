@@ -1,11 +1,14 @@
 (function () {
 
+	const MONACO_EDITOR_CORE_NAME = '@xhjin/monaco-editor-core';
+	const MONACO_EDITOR_CORE_PATH = 'node_modules/' + MONACO_EDITOR_CORE_NAME;
+
 	var METADATA = {
 		CORE: {
 			paths: {
 				src: '/vscode/out/vs',
-				'npm/dev': 'node_modules/@xhjin/monaco-editor-core/dev/vs',
-				'npm/min': 'node_modules/@xhjin/monaco-editor-core/min/vs',
+				'npm/dev': `${MONACO_EDITOR_CORE_PATH}/dev/vs`,
+				'npm/min': `${MONACO_EDITOR_CORE_PATH}/min/vs`,
 				built: '/vscode/out-monaco-editor-core/min/vs',
 				releaseDev: 'release/dev/vs',
 				releaseMin: 'release/min/vs',

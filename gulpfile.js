@@ -270,7 +270,9 @@ function ESM_pluginStream(plugin, destinationPath) {
 					}
 
 					const myFileDestPath = path.join(DESTINATION, plugin.modulePrefix, data.relative);
-					const importFilePath = path.join(DESTINATION, importText.substr(`${MONACO_EDITOR_CORE_NAME}/esm/`.length));
+					// const importFilePath = path.join(DESTINATION, importText.substr(`${MONACO_EDITOR_CORE_NAME}/esm/`.length));
+					// 前缀替换
+					const importFilePath = path.join(DESTINATION, importText.replace(/^(@xhjin[\/])?monaco-editor-core[\/]esm[\/]/, ''));
 					let relativePath = path.relative(path.dirname(myFileDestPath), importFilePath).replace(/\\/g, '/');
 					if (!/(^\.\/)|(^\.\.\/)/.test(relativePath)) {
 						relativePath = './' + relativePath;
